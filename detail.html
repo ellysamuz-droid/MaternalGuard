@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detail Riwayat — Ibu B — MaternalGuard</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="mark">MG</span>
+      MaternalGuard
+    </div>
+    <nav>
+      <a href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        Dashboard Pasien
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        Notifikasi
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        Riwayat Tindak Lanjut
+      </a>
+    </nav>
+    <div class="user">
+      <strong>Bidan Siti Aminah</strong>
+      Puskesmas Manguharjo
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <a href="dashboard.html" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Kembali ke dashboard
+    </a>
+
+    <div class="patient-banner">
+      <div class="avatar danger">IB</div>
+      <div class="info">
+        <strong>Ibu B &middot; 29 tahun &middot; 32 minggu</strong>
+        <span>Puskesmas Manguharjo &middot; riwayat preeklamsia: tidak ada</span>
+      </div>
+      <span class="badge danger">Risiko tinggi</span>
+    </div>
+
+    <section class="vital-strip">
+      <div class="stat-card">
+        <p class="label">Tensi hari ini</p>
+        <p class="value">142/92</p>
+      </div>
+      <div class="stat-card">
+        <p class="label">Baseline normal</p>
+        <p class="value">118/76</p>
+      </div>
+      <div class="stat-card">
+        <p class="label">Risk score</p>
+        <p class="value">78<span style="font-size:14px;color:var(--ink-muted);">/100</span></p>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <h2>Tren tekanan darah, 7 hari terakhir</h2>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="tdChart" role="img" aria-label="Grafik tren tekanan darah Ibu B 7 hari terakhir, naik bertahap dari 118/76 ke 142/92"></canvas>
+      <div class="legend">
+        <span><i style="background:#AE423B;"></i>Sistolik (mmHg)</span>
+        <span><i style="background:#0E6E7C;"></i>Diastolik (mmHg)</span>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>Riwayat keluhan harian</h2>
+    </div>
+    <div class="table-card">
+      <div class="history-row head">
+        <span>Tanggal</span><span>Tensi</span><span>Keluhan</span>
+      </div>
+      <div class="history-row">
+        <span>14 Agu</span><span class="vital-num">118/76</span><span class="complaint-none">Tidak ada</span>
+      </div>
+      <div class="history-row">
+        <span>15 Agu</span><span class="vital-num">120/77</span><span class="complaint-none">Tidak ada</span>
+      </div>
+      <div class="history-row">
+        <span>16 Agu</span><span class="vital-num">122/78</span><span class="complaint-none">Tidak ada</span>
+      </div>
+      <div class="history-row">
+        <span>17 Agu</span><span class="vital-num">126/80</span><span class="complaint-mild">Sedikit pusing</span>
+      </div>
+      <div class="history-row">
+        <span>18 Agu</span><span class="vital-num">131/84</span><span class="complaint-mild">Pusing, kaki sedikit bengkak</span>
+      </div>
+      <div class="history-row">
+        <span>19 Agu</span><span class="vital-num">136/88</span><span class="complaint-severe">Sakit kepala, kaki bengkak</span>
+      </div>
+      <div class="history-row flagged">
+        <span style="font-weight:600;">20 Agu</span>
+        <span class="vital-num" style="font-weight:600;">142/92</span>
+        <span class="complaint-severe">Sakit kepala hebat, pandangan kabur</span>
+      </div>
+    </div>
+
+    <div class="followup-box">
+      <h3>Tindak lanjut</h3>
+      <textarea placeholder="Catat hasil hubungan/pemeriksaan dengan Ibu B"></textarea>
+      <div class="form-actions" style="justify-content:flex-start;">
+        <button class="btn btn-outline">Tandai sudah dihubungi</button>
+        <a href="periksa.html" class="btn btn-primary">Rujuk / catat periksa langsung</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  renderTrendChart(
+    'tdChart',
+    ['14 Agu','15 Agu','16 Agu','17 Agu','18 Agu','19 Agu','20 Agu'],
+    [118,120,122,126,131,136,142],
+    [76,77,78,80,84,88,92]
+  );
+</script>
+</body>
+</html>
