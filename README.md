@@ -1,52 +1,86 @@
-# MaternalGuard — React 19 (React Compiler)
+# MaternalGuard — Next.js App Router & RSC (Modul 6)
 
-Migrasi front-end MaternalGuard dari HTML statis ke React 19, dibuat untuk memenuhi
-kriteria penilaian Praktikum Bab 5 (Framework Modern UI — SV UNS D3 Teknik Informatika).
+Dashboard web untuk **bidan/dokter pendamping** pada sistem MaternalGuard
+(lihat SRS Bab II.a & VII), dibangun ulang dari prototipe Vite/React
+(`MaternalGuard-React.zip`) menggunakan **Next.js 14 App Router** dengan
+React Server Components, sesuai 7 poin rubrik Modul 6.
+
+Aplikasi mobile Flutter untuk ibu hamil tetap di luar cakupan proyek ini
+(lihat SRS Bab I.c — Ruang Lingkup); repo ini hanya mengimplementasikan sisi
+**web dashboard bidan**.
 
 ## Menjalankan proyek
 
 ```bash
 npm install
-npm run dev       # mode pengembangan, buka http://localhost:5173
-npm run build      # build produksi ke folder dist/
+npm run dev       # http://localhost:3000
 ```
 
-## Struktur
+Login demo (lihat `lib/session.ts`):
 
 ```
-src/
-  api/mockApi.js               simulasi API asinkron (fetch/async-await, delay, error)
-  components/
-    Layout/                    Sidebar, AppShell, LoadingBox/ErrorBox
-    Dashboard/                 PatientDashboard, StatCard, PatientTable
-    PatientDetail/             PatientDetail, TrendChart (Chart.js)
-    ExamForm/                  ExamForm (form + validasi client-side)
-  App.jsx                      routing (React Router)
-  main.jsx                     entry point
-docs/
-  Matriks_Pemetaan_SRS_vs_UI_Component.pdf   dokumen pemetaan SRS -> komponen UI
+email    : bidan@maternalguard.id
+password : puskesmas123
 ```
 
-## Yang ditambahkan dibanding versi HTML statis sebelumnya
+Perintah lain:
 
-1. **Komponen React 19 + React Compiler** — state dikelola dengan `useState`,
-   komputasi turunan (statistik risiko, filter tabel) ditulis tanpa `useMemo`/`useCallback`
-   manual; React Compiler (`babel-plugin-react-compiler`, dikonfigurasi di `vite.config.js`)
-   menangani memoization otomatis saat build.
-2. **Validasi form** (`ExamForm.jsx`) — validasi field wajib, rentang nilai medis wajar
-   (sistolik/diastolik/nadi/berat), dan relasi antar-field (diastolik < sistolik), dengan
-   pesan error per-field dan indikator visual.
-3. **Simulasi API asinkron** (`api/mockApi.js`) — `fetchPatients`, `fetchPatientDetail`,
-   `submitExamResult` memakai `async/await` + delay, dilengkapi state `loading` dan
-   `error` (dengan tombol "Coba lagi") di `PatientDashboard`, `PatientDetail`, dan `ExamForm`.
-4. **Struktur komponen reusable** — dipecah dari 3 halaman HTML statis menjadi modul
-   komponen: Dashboard, Detail Pasien, dan Form Periksa, mengikuti pemetaan SRS pada
-   `docs/Matriks_Pemetaan_SRS_vs_UI_Component.pdf`.
+```bash
+npm run typecheck   # tsc --noEmit
+npm run build        # production build
+npm run start         # jalankan hasil build
+```
 
-## Catatan
+## Struktur ringkas
 
-`api/mockApi.js` masih berupa data tiruan di memori (belum terhubung ke backend
-sungguhan). Untuk mengintegrasikan API asli, ganti isi fungsi `fetchPatients`,
-`fetchPatientDetail`, dan `submitExamResult` dengan pemanggilan `fetch`/`axios`
-ke endpoint backend, sambil mempertahankan pola `async/await` dan penanganan error
-yang sudah ada agar UI (loading/error state) tidak perlu diubah.
+```
+app/
+  layout.tsx                     Root Layout (Metadata API statis)
+  page.tsx                       Redirect "/" -> /login atau /dashboard
+  not-found.tsx
+  login/
+    page.tsx
+  (dashboard)/                   Route group privat, satu Sub-Dashboard Layout
+    layout.tsx                   Nested layout: Sidebar dipertahankan lintas rute
+    dashboard/
+      page.tsx  loading.tsx
+    pasien/[id]/
+      page.tsx  loading.tsx  error.tsx
+    periksa/[id]/
+      page.tsx  loading.tsx
+
+components/
+  auth/LoginForm.tsx              'use client'
+  layout/Sidebar.tsx               Server Component
+  layout/NavLinks.tsx              'use client' (usePathname)
+  layout/LogoutButton.tsx          'use client'
+  dashboard/*                      Server Components + SortSelect ('use client')
+  patient/*                        Server Components + TrendChart & FollowUpForm ('use client')
+  exam/ExamForm.tsx                'use client'
+
+lib/
+  data.ts        "Database" tiruan (server-only, async + delay untuk demo streaming)
+  session.ts     Helper cookie sesi
+  actions.ts     Server Actions: login, logout, submitExam, markFollowUp
+  validation.ts  Skema Zod (dipakai di klien & server)
+  types.ts
+
+middleware.ts     Proteksi rute + redirect login
+```
+
+Penjelasan detail pemenuhan tiap poin rubrik ada di
+[`docs/Pemetaan_AppRouter_7Poin.md`](./docs/Pemetaan_AppRouter_7Poin.md).
+
+## Catatan implementasi
+
+- **Data layer tiruan**: `lib/data.ts` menyimulasikan pemanggilan
+  REST API/PostgreSQL milik backend Node.js+Express pada SRS Bab V, lengkap
+  dengan delay artifisial berbeda-beda agar efek streaming/Suspense terlihat
+  jelas saat dijalankan.
+- **Sesi login**: cookie httpOnly sederhana (bukan JWT bertanda tangan
+  sungguhan) — cukup untuk mendemonstrasikan pola middleware + Server Action,
+  bukan implementasi produksi. Pada implementasi nyata harus memakai JWT
+  ber-signature sesuai NFR-01 pada SRS.
+- **Validasi ganda**: skema Zod yang sama dipakai di Client Component (untuk
+  feedback instan) dan di dalam Server Action (validasi otoritatif) —
+  memastikan input tetap tervalidasi meski JavaScript klien dimatikan/di-bypass.
