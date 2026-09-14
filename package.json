@@ -1,0 +1,23 @@
+{
+  "name": "maternalguard-react",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.28.0",
+    "chart.js": "^4.4.1",
+    "react-chartjs-2": "^5.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "babel-plugin-react-compiler": "19.0.0-beta-63e3235-20250105",
+    "vite": "^6.0.5"
+  }
+}
