@@ -533,3 +533,52 @@ select:focus, input:focus, textarea:focus{
 .t-row-click{ position:relative; }
 .row-link-overlay{ position:absolute; inset:0; z-index:0; }
 .row-link-action{ position:relative; z-index:1; }
+
+/* ---------- FollowUpWidget (Modul 7 — Zustand + TanStack Query) ---------- */
+.fw-widget{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  box-shadow:var(--shadow-card);
+  padding:20px 22px;
+  margin-top:20px;
+}
+.fw-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.fw-head h3{ margin:0; font-size:15px; font-weight:600; }
+.fw-tabs{ display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:14px; }
+.fw-tab{
+  background:none; border:none; cursor:pointer;
+  padding:8px 4px; margin-right:16px;
+  font-size:13.5px; color:var(--ink-soft); font-weight:500;
+  border-bottom:2px solid transparent;
+}
+.fw-tab.active{ color:var(--accent); border-bottom-color:var(--accent); }
+.fw-filter{ display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:12.5px; color:var(--ink-soft); }
+.fw-filter-chip{
+  border:1px solid var(--border); background:var(--surface);
+  border-radius:999px; padding:3px 11px; font-size:12px; cursor:pointer; color:var(--ink-soft);
+}
+.fw-filter-chip.active{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+.fw-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+.fw-item{
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:10px 12px; background:var(--surface-alt);
+}
+.fw-item p{ margin:6px 0 4px; font-size:13.5px; }
+.fw-item time{ font-size:11.5px; color:var(--ink-muted); }
+.fw-skeleton-item{ height:56px; border-radius:var(--radius-sm); }
+.fw-error{ background:var(--danger-soft); color:var(--danger); border-radius:var(--radius-sm); padding:10px 12px; font-size:13px; }
+.fw-empty{ color:var(--ink-muted); font-size:13px; padding:14px 0; text-align:center; }
+
+.fw-modal-backdrop{
+  position:fixed; inset:0; background:rgba(23,35,42,0.45);
+  display:flex; align-items:center; justify-content:center; z-index:50;
+}
+.fw-modal{
+  background:var(--surface); border-radius:var(--radius-md);
+  padding:20px 22px; width:min(420px, 90vw);
+  box-shadow:0 8px 24px rgba(23,35,42,0.2);
+}
+.fw-modal h4{ margin:0 0 12px; font-size:14.5px; }
+.fw-modal textarea{ width:100%; min-height:90px; margin-bottom:10px; }
+.fw-modal input, .fw-modal select{ width:100%; margin-bottom:10px; }

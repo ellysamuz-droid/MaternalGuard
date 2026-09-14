@@ -6,6 +6,7 @@ import { getPatient } from "@/lib/data";
 import PatientBanner from "@/components/patient/PatientBanner";
 import TrendHistorySection from "@/components/patient/TrendHistorySection";
 import FollowUpForm from "@/components/patient/FollowUpForm";
+import FollowUpWidget from "@/components/patient/FollowUpWidget";
 
 type Props = { params: { id: string } };
 
@@ -42,6 +43,10 @@ export default async function PatientDetailPage({ params }: Props) {
       </Suspense>
 
       <FollowUpForm patientId={patient.id} patientName={patient.name} />
+
+      {/* Modul 7 — Client UI State (Zustand) & Server State (TanStack Query),
+          dipisah tegas dari data RSC di atas. Lihat docs untuk penjelasan. */}
+      <FollowUpWidget patientId={patient.id} />
     </>
   );
 }
