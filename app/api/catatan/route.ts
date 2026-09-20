@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { CreateFollowUpNoteSchema } from "@/lib/schemas/followup";
+import { type NextRequest, NextResponse } from "next/server";
 import { createNote, listNotes } from "@/lib/followupStore";
+import { CreateFollowUpNoteSchema } from "@/lib/schemas/followup";
 
 // GET /api/catatan?patientId=B
 // Endpoint REST asli yang di-fetch oleh TanStack Query dari Client Component
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Data tidak valid", issues: parsed.error.flatten().fieldErrors },
-      { status: 422 }
+      { status: 422 },
     );
   }
   const created = await createNote(parsed.data);

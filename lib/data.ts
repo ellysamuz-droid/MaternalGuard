@@ -88,9 +88,27 @@ const HISTORY: Record<string, HistoryEntry[]> = {
     { date: "15 Agu", sistolik: 120, diastolik: 77, complaint: "Tidak ada", severity: "none" },
     { date: "16 Agu", sistolik: 122, diastolik: 78, complaint: "Tidak ada", severity: "none" },
     { date: "17 Agu", sistolik: 126, diastolik: 80, complaint: "Sedikit pusing", severity: "mild" },
-    { date: "18 Agu", sistolik: 131, diastolik: 84, complaint: "Pusing, kaki sedikit bengkak", severity: "mild" },
-    { date: "19 Agu", sistolik: 136, diastolik: 88, complaint: "Sakit kepala, kaki bengkak", severity: "severe" },
-    { date: "20 Agu", sistolik: 142, diastolik: 92, complaint: "Sakit kepala hebat, pandangan kabur", severity: "severe" },
+    {
+      date: "18 Agu",
+      sistolik: 131,
+      diastolik: 84,
+      complaint: "Pusing, kaki sedikit bengkak",
+      severity: "mild",
+    },
+    {
+      date: "19 Agu",
+      sistolik: 136,
+      diastolik: 88,
+      complaint: "Sakit kepala, kaki bengkak",
+      severity: "severe",
+    },
+    {
+      date: "20 Agu",
+      sistolik: 142,
+      diastolik: 92,
+      complaint: "Sakit kepala hebat, pandangan kabur",
+      severity: "severe",
+    },
   ],
 };
 

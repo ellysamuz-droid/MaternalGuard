@@ -1,8 +1,8 @@
 import { getPatients } from "@/lib/data";
 import type { Patient } from "@/lib/types";
-import UrgentList from "./UrgentList";
-import SortSelect from "./SortSelect";
 import PatientTable from "./PatientTable";
+import SortSelect from "./SortSelect";
+import UrgentList from "./UrgentList";
 
 const SORTERS: Record<string, (a: Patient, b: Patient) => number> = {
   risiko: (a, b) => b.riskScore - a.riskScore,

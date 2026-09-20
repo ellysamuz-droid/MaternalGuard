@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 // Poin (f) — Middleware Proteksi Rute & Security.
 // Middleware berjalan di Edge Runtime SEBELUM request mencapai Server

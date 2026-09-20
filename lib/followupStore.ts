@@ -1,5 +1,10 @@
 import "server-only";
-import type { CreateFollowUpNoteInput, CreateReminderInput, FollowUpNote, Reminder } from "./schemas/followup";
+import type {
+  CreateFollowUpNoteInput,
+  CreateReminderInput,
+  FollowUpNote,
+  Reminder,
+} from "./schemas/followup";
 
 // ---------------------------------------------------------------------------
 // "Database" tiruan khusus untuk REST API Route Handler (app/api/**).
@@ -41,7 +46,9 @@ let reminders: Reminder[] = [
 ];
 
 export async function listNotes(patientId: string): Promise<FollowUpNote[]> {
-  const data = notes.filter((n) => n.patientId === patientId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const data = notes
+    .filter((n) => n.patientId === patientId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   return delay(data, 600);
 }
 

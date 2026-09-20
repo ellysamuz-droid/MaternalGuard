@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { useFollowUpUIStore } from "@/store/useFollowUpUIStore";
+import { type FormEvent, useEffect, useState } from "react";
 import {
   useCreateFollowUpNoteMutation,
   useCreateReminderMutation,
@@ -9,13 +8,15 @@ import {
   useRemindersQuery,
 } from "@/hooks/useFollowUpQuery";
 import type { CreateReminderInput } from "@/lib/schemas/followup";
+import { useFollowUpUIStore } from "@/store/useFollowUpUIStore";
 
-const JENIS_OPTIONS: CreateReminderInput["jenisPemeriksaan"][] = [
+const JENIS_OPTIONS = [
   "Kontrol rutin",
   "USG",
   "Lab darah/urine",
   "Rujuk spesialis",
-];
+] as const satisfies readonly CreateReminderInput["jenisPemeriksaan"][];
+const DEFAULT_JENIS: CreateReminderInput["jenisPemeriksaan"] = JENIS_OPTIONS[0];
 
 // ---------------------------------------------------------------------------
 // Widget "Catatan Tindak Lanjut & Pengingat Kontrol" — Modul 7.
@@ -41,13 +42,14 @@ export default function FollowUpWidget({ patientId }: { patientId: string }) {
     <div className="fw-widget">
       <div className="fw-head">
         <h3>Catatan Tindak Lanjut &amp; Pengingat Kontrol</h3>
-        <button className="btn btn-primary btn-sm" onClick={openAddModal}>
+        <button type="button" className="btn btn-primary btn-sm" onClick={openAddModal}>
           + Tambah {activeTab === "catatan" ? "catatan" : "pengingat"}
         </button>
       </div>
 
       <div className="fw-tabs" role="tablist">
         <button
+          type="button"
           role="tab"
           aria-selected={activeTab === "catatan"}
           className={`fw-tab ${activeTab === "catatan" ? "active" : ""}`}
@@ -56,6 +58,7 @@ export default function FollowUpWidget({ patientId }: { patientId: string }) {
           Catatan Tindak Lanjut
         </button>
         <button
+          type="button"
           role="tab"
           aria-selected={activeTab === "reminder"}
           className={`fw-tab ${activeTab === "reminder" ? "active" : ""}`}
@@ -68,9 +71,10 @@ export default function FollowUpWidget({ patientId }: { patientId: string }) {
       {activeTab === "catatan" ? (
         <>
           <div className="fw-filter">
-            <label>Filter status:</label>
+            <span className="fw-filter-label">Filter status:</span>
             {(["Semua", "Pending", "Selesai"] as const).map((f) => (
               <button
+                type="button"
                 key={f}
                 className={`fw-filter-chip ${statusFilter === f ? "active" : ""}`}
                 onClick={() => setStatusFilter(f)}
@@ -109,6 +113,7 @@ function NotesList({
     return (
       <div className="fw-list">
         {Array.from({ length: 2 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholder, panjang & urutan tetap
           <div key={i} className="skeleton fw-skeleton-item" />
         ))}
       </div>
@@ -123,7 +128,8 @@ function NotesList({
     );
   }
 
-  const filtered = notes?.filter((n) => statusFilter === "Semua" || n.status === statusFilter) ?? [];
+  const filtered =
+    notes?.filter((n) => statusFilter === "Semua" || n.status === statusFilter) ?? [];
 
   if (filtered.length === 0) {
     return <div className="fw-empty">Belum ada catatan tindak lanjut untuk filter ini.</div>;
@@ -133,7 +139,9 @@ function NotesList({
     <ul className="fw-list">
       {filtered.map((n) => (
         <li key={n.id} className="fw-item">
-          <span className={`badge ${n.status === "Selesai" ? "success" : "warning"}`}>{n.status}</span>
+          <span className={`badge ${n.status === "Selesai" ? "success" : "warning"}`}>
+            {n.status}
+          </span>
           <p>{n.note}</p>
           <time>{new Date(n.createdAt).toLocaleString("id-ID")}</time>
         </li>
@@ -152,6 +160,7 @@ function ReminderList({ patientId }: { patientId: string }) {
     return (
       <div className="fw-list">
         {Array.from({ length: 2 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholder, panjang & urutan tetap
           <div key={i} className="skeleton fw-skeleton-item" />
         ))}
       </div>
@@ -202,29 +211,46 @@ function AddModal({
   const createReminder = useCreateReminderMutation(patientId);
   const [note, setNote] = useState("");
   const [tanggal, setTanggal] = useState("");
-  const [jenis, setJenis] = useState<CreateReminderInput["jenisPemeriksaan"]>(JENIS_OPTIONS[0]);
+  const [jenis, setJenis] = useState<CreateReminderInput["jenisPemeriksaan"]>(DEFAULT_JENIS);
 
   const mutation = activeTab === "catatan" ? createNote : createReminder;
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (activeTab === "catatan") {
-      createNote.mutate(
-        { patientId, note },
-        { onSuccess: () => onClose() }
-      );
+      createNote.mutate({ patientId, note }, { onSuccess: () => onClose() });
     } else {
       createReminder.mutate(
         { patientId, tanggal, jenisPemeriksaan: jenis },
-        { onSuccess: () => onClose() }
+        { onSuccess: () => onClose() },
       );
     }
   }
 
+  // Tutup modal dengan tombol Escape — pola standar, tidak memerlukan
+  // menjadikan backdrop sebagai elemen interaktif (menghindari <button>
+  // membungkus elemen interaktif lain seperti <input>/<select>, yang tidak valid di HTML).
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   return (
-    <div className="fw-modal-backdrop" onClick={onClose}>
-      <div className="fw-modal" onClick={(e) => e.stopPropagation()}>
-        <h4>{activeTab === "catatan" ? "Tambah catatan tindak lanjut" : "Tambah pengingat kontrol"}</h4>
+    <div className="fw-modal-backdrop" aria-hidden="true">
+      <div
+        className="fw-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={
+          activeTab === "catatan" ? "Tambah catatan tindak lanjut" : "Tambah pengingat kontrol"
+        }
+      >
+        <h4>
+          {activeTab === "catatan" ? "Tambah catatan tindak lanjut" : "Tambah pengingat kontrol"}
+        </h4>
         <form onSubmit={handleSubmit}>
           {activeTab === "catatan" ? (
             <textarea
@@ -236,7 +262,12 @@ function AddModal({
             />
           ) : (
             <>
-              <input type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} required />
+              <input
+                type="date"
+                value={tanggal}
+                onChange={(e) => setTanggal(e.target.value)}
+                required
+              />
               <select value={jenis} onChange={(e) => setJenis(e.target.value as typeof jenis)}>
                 {JENIS_OPTIONS.map((opt) => (
                   <option key={opt} value={opt}>

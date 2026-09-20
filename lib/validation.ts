@@ -24,9 +24,7 @@ export const examSchema = z
       .number({ invalid_type_error: "Diastolik wajib diisi." })
       .min(30, "Nilai diastolik di luar rentang wajar (30–180 mmHg).")
       .max(180, "Nilai diastolik di luar rentang wajar (30–180 mmHg)."),
-    nadi: z
-      .union([z.coerce.number().min(30).max(220), z.literal("")])
-      .optional(),
+    nadi: z.union([z.coerce.number().min(30).max(220), z.literal("")]).optional(),
     berat: z
       .union([z.coerce.number().positive("Berat badan harus lebih dari 0."), z.literal("")])
       .optional(),

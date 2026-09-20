@@ -5,6 +5,7 @@ export default function DetailSkeleton() {
       <div className="skeleton skeleton-block" style={{ height: 76, marginBottom: 20 }} />
       <div className="skeleton-stat-grid" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
         {Array.from({ length: 3 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholder, panjang & urutan tetap
           <div key={i} className="skeleton skeleton-stat-card" />
         ))}
       </div>

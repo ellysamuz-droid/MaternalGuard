@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
-import { markFollowUpAction, type FollowUpState } from "@/lib/actions";
+import { type FormEvent, useState, useTransition } from "react";
+import { type FollowUpState, markFollowUpAction } from "@/lib/actions";
 
 const initialState: FollowUpState = { status: "idle" };
 
@@ -46,9 +46,7 @@ export default function FollowUpForm({
           </p>
         )}
         {state.status === "success" && (
-          <p style={{ color: "var(--success)", fontSize: 13, marginBottom: 10 }}>
-            {state.message}
-          </p>
+          <p style={{ color: "var(--success)", fontSize: 13, marginBottom: 10 }}>{state.message}</p>
         )}
         <div className="form-actions" style={{ justifyContent: "flex-start" }}>
           <button type="submit" className="btn btn-outline" disabled={!note.trim() || isPending}>

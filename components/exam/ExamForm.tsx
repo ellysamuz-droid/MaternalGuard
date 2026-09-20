@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { submitExamAction, type ExamState } from "@/lib/actions";
+import { cloneElement, type FormEvent, isValidElement, useState, useTransition } from "react";
+import { type ExamState, submitExamAction } from "@/lib/actions";
 import { examSchema, zodIssuesToFieldErrors } from "@/lib/validation";
 
 const FINDINGS = [
@@ -71,7 +71,13 @@ export default function ExamForm({ patientId }: { patientId: string }) {
 
       {state.formError && (
         <div className="callout" style={{ borderColor: "#AE423B", color: "#AE423B" }}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -120,7 +126,11 @@ export default function ExamForm({ patientId }: { patientId: string }) {
         <div className="check-grid">
           {FINDINGS.map((f) => (
             <label key={f.id}>
-              <input type="checkbox" checked={!!temuan[f.id]} onChange={() => toggleFinding(f.id)} />
+              <input
+                type="checkbox"
+                checked={!!temuan[f.id]}
+                onChange={() => toggleFinding(f.id)}
+              />
               {f.label}
             </label>
           ))}
@@ -164,10 +174,14 @@ export default function ExamForm({ patientId }: { patientId: string }) {
             Monitoring rutin, tidak ada tindakan tambahan
           </label>
         </div>
-        <label style={{ fontSize: 12, color: "var(--ink-soft)", display: "block", marginBottom: 4 }}>
+        <label
+          htmlFor="instruksi"
+          style={{ fontSize: 12, color: "var(--ink-soft)", display: "block", marginBottom: 4 }}
+        >
           Instruksi untuk pasien (akan tampil di aplikasi pasien)
         </label>
         <textarea
+          id="instruksi"
           name="instruksi"
           style={{ width: "100%", minHeight: 60 }}
           placeholder="mis. Kurangi asupan garam, istirahat cukup, segera hubungi bidan jika pusing memberat"
@@ -186,7 +200,13 @@ export default function ExamForm({ patientId }: { patientId: string }) {
             </>
           ) : (
             <>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
                 <path d="M20 6L9 17l-5-5" />
               </svg>
               Simpan Catatan Periksa
@@ -207,10 +227,20 @@ function Field({
   error?: string;
   children: React.ReactNode;
 }) {
+  const controlId = isValidElement<{ name?: string; id?: string }>(children)
+    ? (children.props.id ?? children.props.name)
+    : undefined;
+  const control =
+    controlId && isValidElement<{ id?: string }>(children)
+      ? cloneElement(children, { id: controlId })
+      : children;
+
   return (
     <div className={`field${error ? " has-error" : ""}`}>
-      {label && <label>{label}</label>}
-      {children}
+      {label &&
+        // biome-ignore lint/a11y/noLabelWithoutControl: htmlFor selalu diisi saat controlId ada; fallback tanpa htmlFor hanya untuk Field tanpa child input (mis. textarea di luar Field)
+        (controlId ? <label htmlFor={controlId}>{label}</label> : <label>{label}</label>)}
+      {control}
       {error && <span className="field-error">{error}</span>}
     </div>
   );

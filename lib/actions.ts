@@ -2,9 +2,9 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { submitExamResult } from "./data";
 import { encodeSession, SESSION_COOKIE, verifyCredentials } from "./session";
 import { examSchema, loginSchema, zodIssuesToFieldErrors } from "./validation";
-import { submitExamResult } from "./data";
 
 export type LoginState = {
   status: "idle" | "error";
@@ -12,10 +12,7 @@ export type LoginState = {
   formError?: string;
 };
 
-export async function loginAction(
-  _prev: LoginState,
-  formData: FormData
-): Promise<LoginState> {
+export async function loginAction(_prev: LoginState, formData: FormData): Promise<LoginState> {
   const raw = {
     email: String(formData.get("email") ?? ""),
     password: String(formData.get("password") ?? ""),
@@ -50,7 +47,7 @@ export type FollowUpState = { status: "idle" | "success" | "error"; message?: st
 
 export async function markFollowUpAction(
   _prev: FollowUpState,
-  formData: FormData
+  formData: FormData,
 ): Promise<FollowUpState> {
   const note = String(formData.get("note") ?? "").trim();
   const patientId = String(formData.get("patientId") ?? "");
@@ -70,10 +67,7 @@ export type ExamState = {
   formError?: string;
 };
 
-export async function submitExamAction(
-  _prev: ExamState,
-  formData: FormData
-): Promise<ExamState> {
+export async function submitExamAction(_prev: ExamState, formData: FormData): Promise<ExamState> {
   const temuan: Record<string, boolean> = {};
   for (const [key, value] of formData.entries()) {
     if (key.startsWith("temuan.")) temuan[key.replace("temuan.", "")] = value === "on";

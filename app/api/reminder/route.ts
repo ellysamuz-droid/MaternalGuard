@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { CreateReminderSchema } from "@/lib/schemas/followup";
+import { type NextRequest, NextResponse } from "next/server";
 import { createReminder, listReminders } from "@/lib/followupStore";
+import { CreateReminderSchema } from "@/lib/schemas/followup";
 
 // GET /api/reminder?patientId=B
 export async function GET(request: NextRequest) {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Data tidak valid", issues: parsed.error.flatten().fieldErrors },
-      { status: 422 }
+      { status: 422 },
     );
   }
   const created = await createReminder(parsed.data);

@@ -1,7 +1,7 @@
 import { getPatientHistory } from "@/lib/data";
 import type { Patient } from "@/lib/types";
-import TrendChart from "./TrendChart";
 import HistoryTable from "./HistoryTable";
+import TrendChart from "./TrendChart";
 
 // Query paling lambat pada halaman detail (1.1s) — dipisah dari banner agar
 // bisa di-stream belakangan lewat <Suspense> (poin e). Baseline & tensi

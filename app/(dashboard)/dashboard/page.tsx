@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { getDashboardStats } from "@/lib/data";
-import StatCard from "@/components/dashboard/StatCard";
-import PatientSection from "@/components/dashboard/PatientSection";
 import { TableSkeleton } from "@/components/dashboard/DashboardSkeleton";
+import PatientSection from "@/components/dashboard/PatientSection";
+import StatCard from "@/components/dashboard/StatCard";
+import { getDashboardStats } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Dashboard Pasien",
 };
 
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams: { sort?: string };
-}) {
+export default async function DashboardPage({ searchParams }: { searchParams: { sort?: string } }) {
   // Query "cepat" — hanya agregat, tidak menunggu seluruh daftar pasien
   // selesai diambil (lihat PatientSection untuk query yang sengaja lambat).
   const stats = await getDashboardStats();

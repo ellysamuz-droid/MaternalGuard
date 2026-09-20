@@ -1,6 +1,6 @@
-import NavLinks from "./NavLinks";
-import LogoutButton from "./LogoutButton";
 import type { Session } from "@/lib/types";
+import LogoutButton from "./LogoutButton";
+import NavLinks from "./NavLinks";
 
 // Server Component: menerima data sesi sebagai prop (sudah dibaca di layout
 // lewat getSession()), lalu hanya merender markup statis + dua leaf client

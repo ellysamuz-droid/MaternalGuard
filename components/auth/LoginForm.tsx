@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useTransition, type FormEvent } from "react";
-import { loginAction, type LoginState } from "@/lib/actions";
+import { type FormEvent, useState, useTransition } from "react";
+import { type LoginState, loginAction } from "@/lib/actions";
 
 const initialState: LoginState = { status: "idle" };
 
@@ -43,7 +43,12 @@ export default function LoginForm() {
         )}
       </div>
 
-      <button type="submit" className="btn btn-primary" style={{ width: "100%" }} disabled={isPending}>
+      <button
+        type="submit"
+        className="btn btn-primary"
+        style={{ width: "100%" }}
+        disabled={isPending}
+      >
         {isPending ? (
           <>
             <span className="spinner spinner-sm" />

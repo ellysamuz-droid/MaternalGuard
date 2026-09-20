@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPatient } from "@/lib/data";
-import PatientBanner from "@/components/patient/PatientBanner";
-import TrendHistorySection from "@/components/patient/TrendHistorySection";
+import { Suspense } from "react";
 import FollowUpForm from "@/components/patient/FollowUpForm";
 import FollowUpWidget from "@/components/patient/FollowUpWidget";
+import PatientBanner from "@/components/patient/PatientBanner";
+import TrendHistorySection from "@/components/patient/TrendHistorySection";
+import { getPatient } from "@/lib/data";
 
 type Props = { params: { id: string } };
 
@@ -29,7 +29,13 @@ export default async function PatientDetailPage({ params }: Props) {
   return (
     <>
       <Link href="/dashboard" className="back-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true"
+        >
           <path d="M19 12H5" />
           <path d="M12 19l-7-7 7-7" />
         </svg>
@@ -56,6 +62,7 @@ function TrendHistorySkeleton() {
     <>
       <div className="skeleton-stat-grid" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
         {Array.from({ length: 3 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholder, panjang & urutan tetap
           <div key={i} className="skeleton skeleton-stat-card" />
         ))}
       </div>

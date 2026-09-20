@@ -1,10 +1,10 @@
 import { z } from "zod";
 import {
-  CreateFollowUpNoteInput,
-  CreateReminderInput,
-  FollowUpNote,
+  type CreateFollowUpNoteInput,
+  type CreateReminderInput,
+  type FollowUpNote,
   FollowUpNoteSchema,
-  Reminder,
+  type Reminder,
   ReminderSchema,
 } from "../schemas/followup";
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 
 // Satu-satunya tempat "use client" untuk kebutuhan TanStack Query.
 // `useState` dipakai (bukan variabel modul biasa) supaya setiap sesi
@@ -20,7 +20,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
             refetchOnWindowFocus: false,
           },
         },
-      })
+      }),
   );
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
