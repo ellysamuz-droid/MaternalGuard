@@ -8,6 +8,16 @@ export const loginSchema = z.object({
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 
+// Skema untuk form registrasi Ibu Hamil (FR-01).
+export const registerSchema = z.object({
+  name: z.string().trim().min(3, "Nama minimal 3 karakter."),
+  email: z.string().min(1, "Email wajib diisi.").email("Format email tidak valid."),
+  password: z.string().min(8, "Kata sandi minimal 8 karakter."),
+  patientId: z.string().min(1, "Pilih data kehamilan yang sesuai."),
+  puskesmas: z.string().min(1),
+});
+export type RegisterInput = z.infer<typeof registerSchema>;
+
 // Skema untuk form "Catat Hasil Periksa" (FR-04 / FR-05 pada SRS), memvalidasi
 // rentang fisiologis nilai tekanan darah / nadi / berat badan sebelum dikirim
 // ke Server Action `submitExamAction`.

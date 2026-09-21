@@ -1082,3 +1082,71 @@ textarea:focus {
   width: 100%;
   margin-bottom: 10px;
 }
+
+/* ---------- NotificationBell (FR-09, sisi Bidan) ---------- */
+.notif-bell-wrap {
+  position: relative;
+  margin: 12px 0;
+}
+.notif-bell {
+  width: 100%;
+  text-align: left;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  position: relative;
+}
+.notif-badge {
+  background: var(--danger);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 11px;
+  padding: 1px 7px;
+  margin-left: 6px;
+}
+.notif-panel {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  margin-top: 6px;
+  width: 280px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 20px rgba(23, 35, 42, 0.15);
+  z-index: 40;
+  padding: 8px;
+}
+.notif-empty {
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  padding: 8px;
+  text-align: center;
+}
+.notif-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  border-left: 3px solid var(--border);
+  margin-bottom: 6px;
+}
+.notif-item.level-tinggi {
+  border-left-color: var(--danger);
+  background: var(--danger-soft);
+}
+.notif-item.level-sedang {
+  border-left-color: #c58a1a;
+  background: #fff8e6;
+}
+.notif-item time {
+  font-size: 11px;
+  color: var(--ink-muted);
+}

@@ -11,15 +11,30 @@ import type { Session } from "./types";
 
 export const SESSION_COOKIE = "mg_session";
 
-const DUMMY_USERS = [
+const DUMMY_USERS: {
+  email: string;
+  password: string;
+  session: Session;
+}[] = [
   {
     email: "bidan@maternalguard.id",
     password: "puskesmas123",
     session: {
       userId: "bidan-01",
       name: "Bidan Siti Aminah",
-      role: "bidan" as const,
+      role: "bidan",
       puskesmas: "Puskesmas Manguharjo",
+    },
+  },
+  {
+    email: "ibu.b@maternalguard.id",
+    password: "kehamilanku123",
+    session: {
+      userId: "ibu-B",
+      name: "Ibu B",
+      role: "ibu_hamil",
+      puskesmas: "Puskesmas Manguharjo",
+      patientId: "B",
     },
   },
 ];
@@ -27,6 +42,37 @@ const DUMMY_USERS = [
 export function verifyCredentials(email: string, password: string): Session | null {
   const user = DUMMY_USERS.find((u) => u.email === email && u.password === password);
   return user ? user.session : null;
+}
+
+/**
+ * FR-01: Registrasi Akun Ibu Hamil.
+ * CATATAN KETERBATASAN (didokumentasikan jujur di laporan): disimpan di
+ * memori proses Node (array), BUKAN basis data persisten. Akun akan hilang
+ * saat server restart. Untuk produksi nyata, ganti dengan tabel `users` di
+ * database sesuai SRS Bab VI, dengan password di-hash bcrypt (NFR-01).
+ */
+export function registerIbuHamil(input: {
+  email: string;
+  password: string;
+  name: string;
+  patientId: string;
+  puskesmas: string;
+}): { ok: true } | { ok: false; error: string } {
+  if (DUMMY_USERS.some((u) => u.email === input.email)) {
+    return { ok: false, error: "Email sudah terdaftar" };
+  }
+  DUMMY_USERS.push({
+    email: input.email,
+    password: input.password,
+    session: {
+      userId: `ibu-${input.patientId}-${Date.now()}`,
+      name: input.name,
+      role: "ibu_hamil",
+      puskesmas: input.puskesmas,
+      patientId: input.patientId,
+    },
+  });
+  return { ok: true };
 }
 
 export function encodeSession(session: Session): string {

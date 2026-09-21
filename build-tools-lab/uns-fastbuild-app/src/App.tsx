@@ -51,7 +51,7 @@ export default function App() {
   return (
     <div className="page">
       <header className="page-head">
-        <h1>MaternalGuard — BTLab</h1>
+        <h1>MaternalGuard — Build Tools Lab</h1>
         <p>Modul 8: Benchmark Vite + Rust Toolchain vs Next.js (Webpack/SWC)</p>
       </header>
 

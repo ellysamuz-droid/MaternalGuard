@@ -3,8 +3,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { submitExamResult } from "./data";
-import { encodeSession, SESSION_COOKIE, verifyCredentials } from "./session";
-import { examSchema, loginSchema, zodIssuesToFieldErrors } from "./validation";
+import { encodeSession, registerIbuHamil, SESSION_COOKIE, verifyCredentials } from "./session";
+import { examSchema, loginSchema, registerSchema, zodIssuesToFieldErrors } from "./validation";
 
 export type LoginState = {
   status: "idle" | "error";
@@ -35,7 +35,39 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
     maxAge: 60 * 60 * 8, // 8 jam
   });
 
-  redirect("/dashboard");
+  redirect(session.role === "ibu_hamil" ? "/portal" : "/dashboard");
+}
+
+export type RegisterState = {
+  status: "idle" | "error" | "success";
+  fieldErrors?: Record<string, string>;
+  formError?: string;
+};
+
+/** FR-01: Registrasi Akun (khusus Ibu Hamil di sini; akun bidan dibuat manual oleh admin puskesmas). */
+export async function registerAction(
+  _prev: RegisterState,
+  formData: FormData,
+): Promise<RegisterState> {
+  const raw = {
+    name: String(formData.get("name") ?? ""),
+    email: String(formData.get("email") ?? ""),
+    password: String(formData.get("password") ?? ""),
+    patientId: String(formData.get("patientId") ?? ""),
+    puskesmas: String(formData.get("puskesmas") ?? "Puskesmas Manguharjo"),
+  };
+
+  const parsed = registerSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { status: "error", fieldErrors: zodIssuesToFieldErrors(parsed.error) };
+  }
+
+  const result = registerIbuHamil(parsed.data);
+  if (!result.ok) {
+    return { status: "error", formError: result.error };
+  }
+
+  return { status: "success" };
 }
 
 export async function logoutAction() {

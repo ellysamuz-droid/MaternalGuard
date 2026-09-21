@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import LoginForm from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = {
@@ -22,6 +23,9 @@ export default function LoginPage() {
         <LoginForm />
         <p className="hint">
           Demo: <code>bidan@maternalguard.id</code> / <code>puskesmas123</code>
+        </p>
+        <p className="hint">
+          Ibu hamil belum punya akun? <Link href="/register">Daftar di sini</Link>
         </p>
       </div>
     </div>
