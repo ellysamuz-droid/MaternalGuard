@@ -1,0 +1,85 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+.page {
+  font-family: system-ui, -apple-system, sans-serif;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  color: #17232a;
+}
+.page-head {
+  border-bottom: 2px solid #0e6e7c;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+.page-head h1 {
+  color: #0e6e7c;
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+}
+.page-head p {
+  margin: 0;
+  color: #55707a;
+}
+.card {
+  background: #f4f7f8;
+  border: 1px solid #dbe4e6;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.card h2 {
+  margin-top: 0;
+  font-size: 1.05rem;
+  color: #0e6e7c;
+}
+button {
+  background: #0e6e7c;
+  color: #fff;
+  border: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+}
+th,
+td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #dbe4e6;
+}
+th {
+  background: #0e6e7c;
+  color: #fff;
+}
+td.tool {
+  font-weight: 600;
+}
+td.value {
+  font-weight: 600;
+  color: #0e6e7c;
+  white-space: nowrap;
+}
+td.note {
+  color: #55707a;
+  font-size: 0.78rem;
+}
+.caveat {
+  font-size: 0.8rem;
+  color: #7a5c00;
+  background: #fff8e6;
+  border: 1px solid #f0dfa6;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+}
