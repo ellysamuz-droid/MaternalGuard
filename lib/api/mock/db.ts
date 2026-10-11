@@ -79,7 +79,16 @@ export const JENIS_KELUHAN: JenisKeluhan[] = [
   { id_jenis_keluhan: 9, nama_keluhan: "Pusing ringan", tanda_bahaya: false },
 ];
 
+export interface BidanMock {
+  id_bidan: number;
+  nama: string;
+  email: string;
+  password: string; // hanya mock; backend nyata menyimpan hash bcrypt
+  no_hp: string;
+}
+
 interface Store {
+  bidan: BidanMock[];
   ibu: IbuHamil[];
   pemeriksaan: Pemeriksaan[];
   lab: HasilLab[];
@@ -96,26 +105,27 @@ const tgl = (ms: number) => iso(ms).slice(0, 10);
 /** Hari kirim tetap Selasa & Jumat pukul 10.00 WIB, minimal `minHari` hari dari `fromMs`. */
 export function hitungKirimBerikutnya(fromMs: number, minHari: number): string {
   const WIB = 7 * 3_600_000;
-  for (let i = minHari; i < minHari + 8; i++) {
-    const t = fromMs + i * DAY;
-    const w = new Date(t + WIB);
+  const paling_cepat = fromMs + minHari * DAY;
+  for (let i = 0; i < minHari + 9; i++) {
+    const w = new Date(fromMs + i * DAY + WIB);
     const hari = w.getUTCDay();
-    if (hari === 2 || hari === 5) {
-      return iso(Date.UTC(w.getUTCFullYear(), w.getUTCMonth(), w.getUTCDate(), 10) - WIB);
-    }
+    if (hari !== 2 && hari !== 5) continue;
+    const kandidat = Date.UTC(w.getUTCFullYear(), w.getUTCMonth(), w.getUTCDate(), 10) - WIB;
+    if (kandidat >= paling_cepat) return iso(kandidat); // minimal `minHari` x 24 jam
   }
-  return iso(fromMs + minHari * DAY);
+  return iso(paling_cepat);
 }
 
 function createStore(): Store {
   const now = Date.now();
   const s: Store = {
+    bidan: [{ ...BIDAN_DEMO }],
     ibu: [],
     pemeriksaan: [],
     lab: [],
     jadwal: [],
     notif: [],
-    seq: { ibu: 0, pemeriksaan: 0, vital: 0, skor: 0, lab: 0, jadwal: 0, notif: 0 },
+    seq: { bidan: 1, ibu: 0, pemeriksaan: 0, vital: 0, skor: 0, lab: 0, jadwal: 0, notif: 0 },
     loginGagal: {},
   };
   const next = (k: string) => {
@@ -229,7 +239,7 @@ function createStore(): Store {
       id_notifikasi: idn,
       id_jadwal: idJadwal,
       id_template: idTemplate,
-      isi_pesan: isiPesan(t.isi_template, ibu.nama),
+      isi_pesan: isiPesan(t.isi_template, ibu.nama, BIDAN_DEMO),
       waktu_kirim: iso(now - hariLalu * DAY),
       status_kirim: status,
       no_wa_tujuan: ibu.no_wa,
@@ -362,9 +372,13 @@ export function nextId(key: string): number {
   return db.seq[key] as number;
 }
 
-export function isiPesan(template: string, namaIbu: string): string {
+export function isiPesan(
+  template: string,
+  namaIbu: string,
+  bidan: { nama: string; no_hp: string },
+): string {
   return template
     .replaceAll("{nama}", namaIbu)
-    .replaceAll("{bidan}", BIDAN_DEMO.nama.replace(/^Bidan\s+/, ""))
-    .replaceAll("{no_hp_bidan}", BIDAN_DEMO.no_hp);
+    .replaceAll("{bidan}", bidan.nama.replace(/^Bidan\s+/i, ""))
+    .replaceAll("{no_hp_bidan}", bidan.no_hp);
 }

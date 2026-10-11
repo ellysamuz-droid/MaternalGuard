@@ -8,15 +8,7 @@ import type {
   Pemeriksaan,
   RiwayatNotifikasi,
 } from "../types";
-import {
-  BIDAN_DEMO,
-  db,
-  hitungKirimBerikutnya,
-  isiPesan,
-  JENIS_KELUHAN,
-  nextId,
-  TEMPLATES,
-} from "./db";
+import { db, hitungKirimBerikutnya, isiPesan, JENIS_KELUHAN, nextId, TEMPLATES } from "./db";
 
 // ---------------------------------------------------------------------------
 // Backend tiruan: meniru kontrak endpoint Bagian 9 dokumen (/api/v1) agar
@@ -93,7 +85,8 @@ export function handleMock(
     if (rec && now - rec.sejak < JENDELA_LOGIN_MS && rec.count >= BATAS_LOGIN) {
       return err(429, "Terlalu banyak percobaan login. Coba lagi dalam beberapa menit.");
     }
-    if (email !== BIDAN_DEMO.email || password !== BIDAN_DEMO.password) {
+    const bidan = db.bidan.find((b) => b.email === email);
+    if (!bidan || bidan.password !== password) {
       const fresh = rec && now - rec.sejak < JENDELA_LOGIN_MS ? rec : { count: 0, sejak: now };
       fresh.count += 1;
       db.loginGagal[email] = fresh;
@@ -101,10 +94,28 @@ export function handleMock(
     }
     delete db.loginGagal[email];
     return ok({
-      access_token: buatToken(BIDAN_DEMO.id_bidan, BIDAN_DEMO.nama),
+      access_token: buatToken(bidan.id_bidan, bidan.nama),
       token_type: "bearer",
-      bidan: { id_bidan: BIDAN_DEMO.id_bidan, nama: BIDAN_DEMO.nama },
+      bidan: { id_bidan: bidan.id_bidan, nama: bidan.nama },
     });
+  }
+
+  // POST /auth/register: ASUMSI (belum ada di dokumen v2.0, keputusan terbuka nomor 5).
+  if (method === "POST" && path === "/auth/register") {
+    const nama = String(body?.nama ?? "").trim();
+    const email = String(body?.email ?? "")
+      .trim()
+      .toLowerCase();
+    const no_hp = String(body?.no_hp ?? "").replace(/[^\d]/g, "");
+    const password = String(body?.password ?? "");
+    if (nama.length < 3) return bodyErr("nama", "Nama minimal 3 karakter.");
+    if (!/^\S+@\S+\.\S+$/.test(email)) return bodyErr("email", "Format email tidak valid.");
+    if (!/^(62|0)8\d{8,12}$/.test(no_hp)) return bodyErr("no_hp", "Nomor HP tidak valid.");
+    if (password.length < 8) return bodyErr("password", "Kata sandi minimal 8 karakter.");
+    if (db.bidan.some((b) => b.email === email)) return err(409, "Email sudah terdaftar.");
+    const baru = { id_bidan: nextId("bidan"), nama, email, password, no_hp };
+    db.bidan.push(baru);
+    return ok({ id_bidan: baru.id_bidan, nama, email, no_hp }, 201);
   }
 
   // --- wajib token
@@ -422,7 +433,11 @@ function catatPemeriksaan(ibu: IbuHamil, b: Record<string, unknown> | null): Moc
       id_notifikasi: nextId("notif"),
       id_jadwal: jadwal.id_jadwal,
       id_template: tpl.id_template,
-      isi_pesan: isiPesan(tpl.isi_template, ibu.nama),
+      isi_pesan: isiPesan(
+        tpl.isi_template,
+        ibu.nama,
+        db.bidan.find((b) => b.id_bidan === ibu.id_bidan) ?? { nama: "Bidan", no_hp: "-" },
+      ),
       waktu_kirim: waktu,
       status_kirim: "menunggu",
       no_wa_tujuan: ibu.no_wa,

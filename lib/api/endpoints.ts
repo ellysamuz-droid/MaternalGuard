@@ -16,6 +16,21 @@ import type {
 export const login = (email: string, password: string) =>
   apiFetch<LoginResult>("POST", "/auth/login", { body: { email, password }, token: null });
 
+export const registerBidan = (body: {
+  nama: string;
+  email: string;
+  no_hp: string;
+  password: string;
+}) =>
+  apiFetch<{ id_bidan: number; nama: string; email: string; no_hp: string }>(
+    "POST",
+    "/auth/register",
+    {
+      body,
+      token: null,
+    },
+  );
+
 export const getIbuHamilList = (
   q: { cari?: string; status_risiko?: string; status_persalinan?: string } = {},
 ) => apiFetch<IbuHamil[]>("GET", "/ibu-hamil", { query: q });

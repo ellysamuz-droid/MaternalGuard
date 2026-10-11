@@ -6,8 +6,9 @@ import { redirect } from "next/navigation";
 import * as api from "./api/endpoints";
 import { ApiError } from "./api/server";
 import type { HasilPencatatan } from "./api/types";
+import { registrationEnabled } from "./features";
 import { decodeJwtPayload } from "./jwt";
-import { loginSchema, zodToFieldErrors } from "./schemas/auth";
+import { loginSchema, registerSchema, zodToFieldErrors } from "./schemas/auth";
 import { hasilLabSchema } from "./schemas/hasilLab";
 import { ibuHamilSchema, toIbuPayload } from "./schemas/ibuHamil";
 import { pemeriksaanSchema, toPemeriksaanPayload } from "./schemas/pemeriksaan";
@@ -90,6 +91,40 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
     return apiErrorState(e, formData);
   }
   redirect(amanPath(str(formData, "from")));
+}
+
+export async function registerAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  if (!registrationEnabled())
+    return { status: "error", formError: "Pendaftaran bidan sedang tidak dibuka." };
+  const parsed = registerSchema.safeParse({
+    nama: str(formData, "nama"),
+    email: str(formData, "email"),
+    no_hp: str(formData, "no_hp"),
+    password: str(formData, "password"),
+    konfirmasi: str(formData, "konfirmasi"),
+    setuju: formData.get("setuju") === "on",
+  });
+  if (!parsed.success) {
+    return {
+      status: "error",
+      fieldErrors: zodToFieldErrors(parsed.error),
+      values: rawValues(formData),
+    };
+  }
+  try {
+    const { nama, email, no_hp, password } = parsed.data;
+    await api.registerBidan({ nama, email, no_hp, password });
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 409) {
+      return {
+        status: "error",
+        fieldErrors: { email: "Email sudah terdaftar. Silakan masuk." },
+        values: rawValues(formData),
+      };
+    }
+    return apiErrorState(e, formData);
+  }
+  redirect("/login?terdaftar=1");
 }
 
 export async function logoutAction() {

@@ -18,7 +18,7 @@ cp .env.example .env.local   # opsional, bawaan sudah mode mock
 npm run dev                  # http://localhost:3000
 ```
 
-Akun demo (mode mock): `bidan@maternalguard.id` / `puskesmas123`
+Akun demo (mode mock): `bidan@maternalguard.id` / `puskesmas123`. Akun baru juga bisa dibuat lewat halaman Daftar (hanya tersimpan di memori selama server hidup).
 
 ## Mode API
 
@@ -31,7 +31,8 @@ Akun demo (mode mock): `bidan@maternalguard.id` / `puskesmas123`
 
 ```
 app/
-  login/                      Masuk (FR-01)
+  page.tsx                    Landing page publik (satu-satunya halaman yang diindeks)
+  login/  daftar/             Masuk (FR-01) dan pendaftaran bidan (asumsi, lihat docs)
   (dashboard)/dashboard/      Ringkasan + daftar ibu hamil, cari & filter (FR-03)
   (dashboard)/ibu-hamil/
     baru/                     Daftar ibu hamil (FR-02)

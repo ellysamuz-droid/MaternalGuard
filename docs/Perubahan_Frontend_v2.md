@@ -76,7 +76,20 @@ Hasil lab dan keluhan **belum menjadi input model**; keduanya ditampilkan sebaga
 - **Persetujuan dicabut** lewat `PUT /ibu-hamil/{id}` dengan `persetujuan_wa=false`; backend menghentikan jadwal.
 - **Tanda "belum lahir"** (koreksi) tidak mengaktifkan kembali jadwal yang sudah berhenti.
 
-## 5. Yang sengaja tidak ada
+## 5. Landing page dan pendaftaran bidan (pembaruan)
 
-Registrasi akun bidan, akun/portal ibu hamil, notifikasi dalam aplikasi, halaman notifikasi lintas ibu hamil
+- `/` kini landing page publik: penjelasan produk, fitur, cara kerja, contoh pesan, FAQ, dan tombol **Masuk** dan
+  **Daftar** di navbar, hero, serta bagian penutup. Bila sudah login, tombolnya berubah menjadi "Buka dashboard".
+  Isinya hanya penjelasan produk dan data fiktif, tanpa data pasien, sehingga halaman ini diizinkan diindeks.
+- `/daftar` adalah **asumsi baru**: dokumen v2.0 belum mendefinisikan registrasi bidan (keputusan terbuka nomor 5).
+  Form memakai atribut entitas `bidan` (nama, email, no_hp, password) ditambah pernyataan tanggung jawab bidan.
+- Asumsi endpoint untuk backend: `POST /auth/register` menerima `{nama, email, no_hp, password}`, mengembalikan 201
+  `{id_bidan, nama, email, no_hp}`, 409 bila email sudah ada, 422 bila data tidak valid. Kata sandi disimpan sebagai
+  hash bcrypt.
+- Bila keputusan akhirnya akun dibuat admin, set `REGISTRATION_ENABLED=false`: halaman `/daftar` menjadi 404 dan
+  semua tombol Daftar hilang tanpa mengubah kode.
+
+## 6. Yang sengaja tidak ada
+
+Akun/portal ibu hamil, notifikasi dalam aplikasi, halaman notifikasi lintas ibu hamil
 (endpoint hanya per ibu), pengeditan template pesan, ekspor laporan.
