@@ -1,0 +1,10 @@
+# Layanan "worker" (set Config File Path di Railway: /backend/railway.worker.toml)
+# Satu proses terpisah. JANGAN menambah replika: jadwal dijaga penguncian baris, tetapi arsitektur menetapkan 1 worker.
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "python -m app.worker"
+numReplicas = 1
+restartPolicyType = "ALWAYS"

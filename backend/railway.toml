@@ -1,0 +1,13 @@
+# Layanan "api" (set Config File Path di Railway: /backend/railway.toml)
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+# Migrasi dan data awal dijalankan sebelum versi baru menerima lalu lintas. Keduanya idempoten.
+preDeployCommand = ["alembic upgrade head", "python -m app.seed"]
+startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/api/v1/health"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
