@@ -1,10 +1,13 @@
-node_modules
-.next
-out
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.env
+# Node
+node_modules/
+.next/
 .env*.local
-npm-debug.log*
+# Lain-lain
 .DS_Store
-*.tsbuildinfo
-next-env.d.ts
-.vercel
-.env*
