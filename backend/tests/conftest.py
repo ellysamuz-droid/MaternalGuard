@@ -42,7 +42,7 @@ from app.whatsapp import set_provider  # noqa: E402
 from app.whatsapp.base import SendRequest, SendResult, WhatsAppError  # noqa: E402
 from app.whatsapp.fake import FakeWhatsApp  # noqa: E402
 
-TABEL = "detail_keluhan, riwayat_notifikasi, jadwal_pesan, skor_risiko, vital, pemeriksaan, hasil_lab, ibu_hamil, template_pesan, jenis_keluhan, bidan"
+TABEL = "log_persetujuan, detail_keluhan, riwayat_notifikasi, jadwal_pesan, skor_risiko, vital, pemeriksaan, hasil_lab, ibu_hamil, template_pesan, jenis_keluhan, bidan"
 
 
 @pytest.fixture(scope="session", autouse=True)

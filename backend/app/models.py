@@ -56,6 +56,19 @@ class IbuHamil(Base):
     bidan: Mapped[Bidan] = relationship()
 
 
+class LogPersetujuan(Base):
+    """Catatan perubahan persetujuan WhatsApp (Bagian 10: perubahan persetujuan tercatat).
+    Hanya bertambah. persetujuan_lama NULL berarti pencatatan awal saat ibu hamil didaftarkan."""
+
+    __tablename__ = "log_persetujuan"
+    id_log: Mapped[int] = mapped_column(primary_key=True)
+    id_ibu: Mapped[int] = mapped_column(ForeignKey("ibu_hamil.id_ibu"), index=True)
+    id_bidan: Mapped[int] = mapped_column(ForeignKey("bidan.id_bidan"))
+    persetujuan_lama: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    persetujuan_baru: Mapped[bool] = mapped_column(Boolean)
+    waktu: Mapped[datetime] = mapped_column(TZ_DT, server_default=func.now())
+
+
 class JenisKeluhan(Base):
     __tablename__ = "jenis_keluhan"
     id_jenis_keluhan: Mapped[int] = mapped_column(primary_key=True)

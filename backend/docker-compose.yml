@@ -1,0 +1,70 @@
+# Menjalankan database + API + worker MaternalGuard di komputer sendiri (Docker Desktop).
+# Taruh file ini di folder backend (sejajar dengan Dockerfile dan alembic.ini).
+#
+# Buat file bernama .env di folder yang sama, isi dua baris:
+#   POSTGRES_PASSWORD=isi-sandi-database-bebas
+#   JWT_SECRET=isi-teks-acak-minimal-32-karakter
+#
+# Jalankan:  docker compose up -d --build
+# Hentikan:  docker compose down        (data AMAN, tersimpan di volume "pgdata")
+# JANGAN pakai "docker compose down -v": opsi -v MENGHAPUS volume beserta seluruh isi database.
+
+name: maternalguard
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: maternalguard
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?isi POSTGRES_PASSWORD di file .env}
+      POSTGRES_DB: maternalguard
+    ports:
+      - "127.0.0.1:5432:5432"   # hanya bisa diakses dari laptop ini, bukan dari jaringan
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U maternalguard -d maternalguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Di DALAM container, "localhost" berarti container itu sendiri. Database dijangkau lewat nama layanan "db".
+      DATABASE_URL: postgresql://maternalguard:${POSTGRES_PASSWORD}@db:5432/maternalguard
+      JWT_SECRET: ${JWT_SECRET:?isi JWT_SECRET di file .env}
+      ENVIRONMENT: development
+      WHATSAPP_PROVIDER: fake
+      ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+    ports:
+      - "127.0.0.1:8000:8000"   # front end di laptop memanggil http://127.0.0.1:8000
+    # Migrasi dan data awal dijalankan setiap start (aman diulang), lalu API menyala.
+    command: sh -c "alembic upgrade head && python -m app.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  worker:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy   # tabel sudah dibuat oleh migrasi di layanan api
+    environment:
+      DATABASE_URL: postgresql://maternalguard:${POSTGRES_PASSWORD}@db:5432/maternalguard
+      JWT_SECRET: ${JWT_SECRET}
+      ENVIRONMENT: development
+      WHATSAPP_PROVIDER: fake
+    command: python -m app.worker
+
+volumes:
+  pgdata:

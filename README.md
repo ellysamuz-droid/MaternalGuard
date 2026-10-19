@@ -7,9 +7,13 @@ untuk ibu berisiko tinggi. Kategori risiko adalah **peringatan dini, bukan diagn
 |---|---|---|
 | [`frontend/`](frontend/README.md) | Web bidan dan landing page | Next.js 14, Bootstrap |
 | [`backend/`](backend/README.md) | API, skoring model, worker jadwal pesan | FastAPI, PostgreSQL, APScheduler |
-| [`docs/`](docs/) | Panduan deploy, catatan backend, dokumen arsitektur dan diagram | |
+| [`docs/`](docs/) | Panduan lokal (Windows), panduan deploy, catatan backend, dokumen arsitektur dan diagram | |
 
-## Jalankan keduanya di komputer sendiri
+## Cara tercepat di Windows: Docker Desktop
+Database, API, dan worker berjalan lewat `docker compose` (data tersimpan di laptop, tanpa batas waktu hosting).
+Langkah lengkap dan penanganan masalah: [`docs/PANDUAN_LOKAL_WINDOWS.md`](docs/PANDUAN_LOKAL_WINDOWS.md).
+
+## Jalankan manual tanpa Docker
 
 Terminal 1, backend (butuh PostgreSQL dan Python 3.13; detail di `backend/README.md`):
 ```bash

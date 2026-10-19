@@ -16,9 +16,15 @@ Mengikuti dokumen *Analisis Arsitektur Backend MaternalGuard* v2.0.
 | Adapter WhatsApp (`fake` dan `cloud`) | `app/whatsapp/` |
 | Worker penjadwal (proses terpisah) | `app/worker.py` |
 | Data awal, perintah pengelola | `app/seed.py`, `app/cli.py` |
+| Docker Compose (db + api + worker) | `docker-compose.yml`, `.env.compose.example` |
 | Pengujian (PostgreSQL asli) | `tests/` |
 
 ## Menjalankan di komputer sendiri
+
+**Dengan Docker (disarankan, mis. Windows + Docker Desktop):** lihat `../docs/PANDUAN_LOKAL_WINDOWS.md`. Ringkasnya:
+salin `.env.compose.example` menjadi `.env`, isi dua nilainya, lalu `docker compose up -d --build`.
+
+**Tanpa Docker:**
 
 Butuh Python 3.13 (versi dikunci agar cocok dengan model) dan PostgreSQL.
 
@@ -83,7 +89,7 @@ difilter dengan `id_bidan` dari token; ibu milik bidan lain dijawab 404.
   belum-berhenti per ibu, dijamin indeks database), lalu baris riwayat `menunggu` dibuat, lalu pesan pembuka dikirim di
   latar belakang. Pesan terjadwal pertama minimal 2 hari setelah itu.
 - Kategori turun ke low/mid, persetujuan dicabut, atau ibu sudah lahir: jadwal berhenti otomatis.
-- Riwayat notifikasi hanya bertambah. Tiap upaya satu baris; yang berubah hanya `status_kirim` dan
+- Perubahan persetujuan WhatsApp dicatat di tabel `log_persetujuan` (lama, baru, bidan, waktu). Riwayat notifikasi hanya bertambah. Tiap upaya satu baris; yang berubah hanya `status_kirim` dan
   `id_pesan_gateway`. Status: `menunggu`, `terkirim`, `diterima`, `gagal`; webhook tidak pernah menurunkan status.
 - Penolakan pengiriman diulang sampai `WA_MAX_RETRY` (tiap upaya satu baris). Kegagalan yang baru dilaporkan webhook
   (`failed`) tidak diulang otomatis.

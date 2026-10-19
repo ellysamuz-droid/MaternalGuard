@@ -8,6 +8,13 @@
 - Hari dan jam kirim default Selasa dan Jumat 10.00 WIB (`JADWAL_HARI`, `JADWAL_JAM`).
 - Ambang proteinuria positif default: dipstik ≥ +1, protein 24 jam ≥ 0,3 g, rasio protein/kreatinin ≥ 0,3.
 
+## Tabel tambahan: `log_persetujuan` (disetujui)
+Mencatat perubahan persetujuan WhatsApp (Bagian 10: perubahan persetujuan tercatat). Kolom: `id_log`, `id_ibu`,
+`id_bidan` (yang mengubah), `persetujuan_lama` (NULL = pencatatan awal saat didaftarkan), `persetujuan_baru`, `waktu`.
+Dicatat dalam satu transaksi dengan perubahannya, hanya bertambah, dan tidak ada endpoint ubah atau hapus. Migrasi
+`0002` mengisi catatan awal untuk ibu hamil yang sudah ada (kolom `waktu` berisi waktu migrasi dijalankan). Belum ada
+endpoint untuk membaca log ini; tabelnya dapat dibaca langsung di database.
+
 ## Perlu konfirmasi pihak medis sebelum dipakai sungguhan
 1. Ambang proteinuria di atas (hanya tampilan pendukung, belum memengaruhi skor).
 2. Seluruh teks template pesan di `app/seed.py` (isi "pembuka" adalah contoh buatan; keempat tema lain berasal dari
@@ -33,5 +40,5 @@
 - Beban tinggi dan lebih dari satu replika API (pembatas login berada di memori proses).
 
 ## Pembaruan yang perlu masuk ke dokumen arsitektur
-`template_pesan.nama_template`, endpoint `POST /auth/register` dan `GET /health`, satuan simpan vital, aturan
+tabel `log_persetujuan` (ERD dan class diagram), `template_pesan.nama_template`, endpoint `POST /auth/register` dan `GET /health`, satuan simpan vital, aturan
 pemulihan pesan menggantung, dan pemetaan status webhook ke bahasa Indonesia.

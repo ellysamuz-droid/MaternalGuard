@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..db import get_db
 from ..deps import get_current_bidan, ibu_milik
-from ..models import Bidan, IbuHamil
+from ..models import Bidan, IbuHamil, LogPersetujuan
 from ..schemas import IbuIn, IbuOut, StatusPersalinanIn
 from ..services import jadwal as svc_jadwal
 
@@ -37,6 +37,9 @@ def daftar(
 def tambah(body: IbuIn, db: Session = Depends(get_db), bidan: Bidan = Depends(get_current_bidan)):
     ibu = IbuHamil(id_bidan=bidan.id_bidan, **body.model_dump())
     db.add(ibu)
+    db.flush()
+    # Pencatatan awal persetujuan (lama = NULL), satu transaksi dengan pendaftaran ibu.
+    db.add(LogPersetujuan(id_ibu=ibu.id_ibu, id_bidan=bidan.id_bidan, persetujuan_lama=None, persetujuan_baru=ibu.persetujuan_wa))
     db.commit()
     log.info("Ibu hamil %s dicatat oleh bidan %s (persetujuan_wa=%s)", ibu.id_ibu, bidan.id_bidan, ibu.persetujuan_wa)
     return ibu
@@ -54,8 +57,9 @@ def ubah(id_ibu: int, body: IbuIn, db: Session = Depends(get_db), bidan: Bidan =
     for k, v in body.model_dump().items():
         setattr(ibu, k, v)
     if persetujuan_lama != ibu.persetujuan_wa:
-        # Perubahan persetujuan tercatat (Bagian 10).
-        log.info("AUDIT persetujuan_wa ibu=%s bidan=%s: %s -> %s", ibu.id_ibu, bidan.id_bidan, persetujuan_lama, ibu.persetujuan_wa)
+        # Perubahan persetujuan tercatat di tabel log_persetujuan (Bagian 10), satu transaksi dengan perubahannya.
+        db.add(LogPersetujuan(id_ibu=ibu.id_ibu, id_bidan=bidan.id_bidan, persetujuan_lama=persetujuan_lama, persetujuan_baru=ibu.persetujuan_wa))
+        log.info("Persetujuan WhatsApp ibu=%s bidan=%s berubah: %s -> %s", ibu.id_ibu, bidan.id_bidan, persetujuan_lama, ibu.persetujuan_wa)
     if persetujuan_lama and not ibu.persetujuan_wa:
         svc_jadwal.hentikan_jadwal(db, ibu.id_ibu, "persetujuan dicabut")
     db.commit()

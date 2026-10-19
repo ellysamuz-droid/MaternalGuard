@@ -14,6 +14,17 @@ maternalguard/
 ```
 Kerjakan di branch (misalnya `monorepo`), jangan langsung di `main`, karena Vercel mungkin sudah deploy otomatis dari `main`.
 
+## 0b. Bila `main` hanya berisi front end (struktur lama) dan `monorepo` berisi semuanya
+
+- Selama `main` belum digabung dengan `monorepo`, biarkan Vercel membangun `main` dengan **Root Directory kosong**
+  (file Next.js ada di akar). Isi `API_MODE=mock` atau kosongkan: situs Vercel menampilkan antarmuka dengan data
+  tiruan, karena backend asli hanya berjalan di laptop (lihat `PANDUAN_LOKAL_WINDOWS.md`).
+- Agar Vercel tidak membangun branch `monorepo` (yang tidak punya `package.json` di akar dan akan gagal), isi
+  **Settings, Git, Ignored Build Step** dengan:
+  `if [ "$VERCEL_GIT_COMMIT_REF" = "main" ]; then exit 1; else exit 0; fi`
+  Kode keluar 0 berarti *lewati build*, kode 1 berarti *bangun*. Cek kembali dengan dokumentasi Vercel bila menunya berubah.
+- Setelah `monorepo` digabung ke `main`, ubah **Root Directory** menjadi `frontend`, lalu hapus Ignored Build Step di atas.
+
 ## 1. Railway: database dan dua layanan
 
 Satu *project* Railway berisi tiga bagian: **Postgres**, **api**, dan **worker**.

@@ -445,3 +445,44 @@ def test_variabel_template_whatsapp_mengikuti_isi_template(client, auth, skor, w
     assert per_jenis["pembuka"] == ["Siti Rahma", "Siti Aminah", "081234567890"]
     assert per_jenis["kontrol"] == ["Siti Rahma", "Siti Aminah", "081234567890"]
     assert per_jenis["istirahat dan pola hidup"] == ["Siti Rahma", "Siti Aminah"]
+
+
+# ---------------- log_persetujuan ----------------
+def _log(sf, id_ibu):
+    from app.models import LogPersetujuan
+
+    with sf() as db:
+        rows = db.scalars(select(LogPersetujuan).where(LogPersetujuan.id_ibu == id_ibu).order_by(LogPersetujuan.id_log)).all()
+        return [(r.persetujuan_lama, r.persetujuan_baru, r.id_bidan, r.waktu) for r in rows]
+
+
+def test_log_persetujuan_dicatat_saat_daftar_dan_saat_berubah(client, auth, sf):
+    from .conftest import body_ibu
+
+    ibu = buat_ibu(client, auth, persetujuan_wa=True)
+    pid = ibu["id_ibu"]
+    awal = _log(sf, pid)
+    assert [(a, b, c) for a, b, c, _ in awal] == [(None, True, 1)]  # pencatatan awal, lama = NULL
+    assert awal[0][3] is not None  # waktu terisi
+
+    # ubah data lain tanpa mengubah persetujuan: tidak ada baris baru
+    client.put(f"{P}/ibu-hamil/{pid}", json=body_ibu(alamat="Alamat baru 12"), headers=auth)
+    assert len(_log(sf, pid)) == 1
+    # cabut, lalu aktifkan kembali: dua baris baru, urut waktu
+    client.put(f"{P}/ibu-hamil/{pid}", json=body_ibu(persetujuan_wa=False), headers=auth)
+    client.put(f"{P}/ibu-hamil/{pid}", json=body_ibu(persetujuan_wa=True), headers=auth)
+    assert [(a, b) for a, b, _, _ in _log(sf, pid)] == [(None, True), (True, False), (False, True)]
+
+
+def test_log_persetujuan_mencatat_bidan_yang_mengubah_dan_untuk_persetujuan_awal_false(client, auth, sf):
+    ibu = buat_ibu(client, auth, persetujuan_wa=False)
+    assert [(a, b) for a, b, _, _ in _log(sf, ibu["id_ibu"])] == [(None, False)]
+
+
+def test_log_persetujuan_tidak_tercatat_bila_perubahan_ditolak(client, auth, sf):
+    from .conftest import body_ibu
+
+    ibu = buat_ibu(client, auth, persetujuan_wa=True)
+    r = client.put(f"{P}/ibu-hamil/{ibu['id_ibu']}", json=body_ibu(persetujuan_wa=False, no_wa="0812"), headers=auth)
+    assert r.status_code == 422
+    assert [(a, b) for a, b, _, _ in _log(sf, ibu["id_ibu"])] == [(None, True)]  # tidak ada perubahan yang tercatat
