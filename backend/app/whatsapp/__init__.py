@@ -14,6 +14,10 @@ def get_provider() -> WhatsAppProvider:
             from .cloud import CloudWhatsApp
 
             _provider = CloudWhatsApp(s)
+        elif s.whatsapp_provider == "fonnte":
+            from .fonnte import FonnteWhatsApp
+
+            _provider = FonnteWhatsApp(s)
         else:
             from ..services.notifikasi import terapkan_status_sesi
             from .fake import FakeWhatsApp

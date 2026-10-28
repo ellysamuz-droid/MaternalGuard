@@ -160,6 +160,10 @@ def proses_kirim(sf, id_notifikasi: int, provider: WhatsAppProvider | None = Non
                 current = baru.id_notifikasi
             else:
                 r.id_pesan_gateway = hasil.message_id
+                # Penyedia tanpa webhook status (mis. Fonnte) menandai pesan terkirim begitu diterima API-nya.
+                awal = getattr(provider, "status_setelah_kirim", None)
+                if awal:
+                    r.status_kirim = awal
                 db.commit()
                 return
         if s.wa_retry_delay_seconds > 0:

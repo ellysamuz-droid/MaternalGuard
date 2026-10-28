@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     wa_verify_token: str = ""
     wa_api_version: str = "v21.0"
     wa_template_language: str = "id"
+    fonnte_token: str = ""
 
     @field_validator("database_url")
     @classmethod
